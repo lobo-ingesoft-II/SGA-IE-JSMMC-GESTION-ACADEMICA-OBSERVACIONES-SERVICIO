@@ -1,148 +1,140 @@
-# Servicio de Observaciones
+# 🎓 API de Observaciones Disciplinarias
 
-## Descripción
+API REST para gestión de observaciones disciplinarias de estudiantes.
 
-Este servicio permite gestionar las observaciones realizadas sobre los estudiantes en el sistema académico. Proporciona funcionalidades para crear, obtener y listar observaciones, facilitando el seguimiento académico.
+## 🚀 Inicio Rápido
 
-## Endpoints
+### Instalación
+```bash
+# 1. Clonar y navegar al directorio
+git clone <repository-url>
+cd SGA-IE-JSMMC-GESTION-ACADEMICA-OBSERVACIONES-SERVICIO
 
-### Registrar una observación
+# 2. Crear entorno virtual
+python3 -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
 
-**POST** `/observaciones/`
+# 3. Instalar dependencias
+pip install -r requirements.txt
 
-#### Request Body
+# 4. Configurar variables de entorno
+cp .env.example .env
+# Editar .env con tu configuración de base de datos
 
-```json
-{
-  "id_estudiante": 1,
-  "id_asignatura": 1,
-  "id_profesor": 1,
-  "fecha_incidente": "2025-06-08",
-  "tipo_falta": "Falta grave",
-  "articulo_manual_convivencia": "Artículo 5, sección 2",
-  "observacion": "El estudiante no asistió al evento obligatorio."
-}
+# 5. Ejecutar servidor
+uvicorn app.main:app --reload --port 8003
 ```
 
-#### Response
+### Acceso
+- **API**: http://localhost:8003
+- **Documentación**: http://localhost:8003/docs
+- **Health Check**: http://localhost:8003/health
 
-**Status:** 200 OK
+## 📚 Endpoints Principales
 
-```json
-{
-  "id_observacion": 1,
-  "id_estudiante": 1,
-  "id_asignatura": 1,
-  "id_profesor": 1,
-  "fecha_incidente": "2025-06-08",
-  "tipo_falta": "Falta grave",
-  "articulo_manual_convivencia": "Artículo 5, sección 2",
-  "observacion": "El estudiante no asistió al evento obligatorio.",
-  "fecha_registro": "2025-06-09T12:00:00"
-}
-```
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| GET | `/observaciones/` | Listar observaciones (paginado) |
+| POST | `/observaciones/` | Crear nueva observación |
+| GET | `/observaciones/{id}` | Obtener observación específica |
+| PUT | `/observaciones/{id}` | Actualizar observación |
+| DELETE | `/observaciones/{id}` | Eliminar observación |
+| GET | `/observaciones/estudiante/{id}` | Observaciones por estudiante |
 
-### Obtener una observación por ID
+## 💡 Ejemplo de Uso
 
-**GET** `/observaciones/{id_observacion}`
-
-#### Response
-
-**Status:** 200 OK
-
-```json
-{
-  "id_observacion": 1,
-  "id_estudiante": 1,
-  "id_asignatura": 1,
-  "id_profesor": 1,
-  "fecha_incidente": "2025-06-08",
-  "tipo_falta": "Falta grave",
-  "articulo_manual_convivencia": "Artículo 5, sección 2",
-  "observacion": "El estudiante no asistió al evento obligatorio.",
-  "fecha_registro": "2025-06-09T12:00:00"
-}
-```
-
-**Status:** 404 Not Found
-
-```json
-{
-  "detail": "Observacion not found"
-}
-```
-
-### Listar todas las observaciones
-
-**GET** `/observaciones/`
-
-#### Response
-
-**Status:** 200 OK
-
-```json
-[
-  {
-    "id_observacion": 1,
+### Crear Observación
+```bash
+curl -X POST "http://localhost:8003/observaciones/" \
+  -H "Content-Type: application/json" \
+  -d '{
     "id_estudiante": 1,
     "id_asignatura": 1,
     "id_profesor": 1,
-    "fecha_incidente": "2025-06-08",
-    "tipo_falta": "Falta grave",
-    "articulo_manual_convivencia": "Artículo 5, sección 2",
-    "observacion": "El estudiante no asistió al evento obligatorio.",
-    "fecha_registro": "2025-06-09T12:00:00"
-  },
-  {
-    "id_observacion": 2,
-    "id_estudiante": 2,
-    "id_asignatura": 2,
-    "id_profesor": 2,
-    "fecha_incidente": "2025-06-09",
-    "tipo_falta": "Falta leve",
-    "articulo_manual_convivencia": null,
-    "observacion": "El estudiante entregó la tarea fuera del tiempo establecido.",
-    "fecha_registro": "2025-06-09T12:30:00"
-  }
-]
+    "fecha_incidente": "2025-07-02",
+    "tipo_falta": "Leve",
+    "articulo_manual_convivencia": "Art. 10.1",
+    "observacion": "Descripción de la observación"
+  }'
 ```
 
-## Instalación
+### Integración Frontend (JavaScript)
+```javascript
+const API_BASE_URL = 'http://localhost:8003';
 
-1. Asegúrate de tener el entorno configurado:
+// Listar observaciones
+async function getObservaciones(skip = 0, limit = 50) {
+  const response = await fetch(`${API_BASE_URL}/observaciones/?skip=${skip}&limit=${limit}`);
+  return await response.json();
+}
 
-   ```bash
-   pip install -r requirements.txt
-   ```
-2. Configura la base de datos en el archivo `.env`:
+// Crear observación
+async function createObservacion(data) {
+  const response = await fetch(`${API_BASE_URL}/observaciones/`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+  return await response.json();
+}
 
-   ```env
-   DATABASE_URL="mysql+pymysql://user:password@host:port/database"
-   ```
-3. Ejecuta el servidor:
+// Tipos de falta manejados por el frontend
+const TIPOS_FALTA = ['Leve', 'Grave', 'Gravísima'];
+```
 
-   ```bash
-   uvicorn app.main:app --reload --port 8006
-   ```
+## ⚙️ Configuración
 
-## Pruebas
+### Variables de Entorno (.env)
+```env
+# Base de datos
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=tu_password
+DB_NAME=observaciones_db
 
-Para ejecutar las pruebas unitarias:
+# APIs externas
+ESTUDIANTES_API_URL=http://localhost:8005
+```
+
+### Estructura de Datos
+```json
+{
+  "id_estudiante": 1,
+  "id_asignatura": 1,
+  "id_profesor": 1,
+  "fecha_incidente": "2025-07-02",
+  "tipo_falta": "Leve|Grave|Gravísima",
+  "articulo_manual_convivencia": "Art. 10.1",
+  "observacion": "Descripción mínima de 10 caracteres"
+}
+```
+
+## 🚀 Producción
 
 ```bash
-pytest app/tests/test_observaciones.py
+# Ejecutar en producción con Uvicorn
+uvicorn app.main:app --host 0.0.0.0 --port 8003 --workers 4
+
+# O con configuración adicional para producción
+uvicorn app.main:app --host 0.0.0.0 --port 8003 --workers 4 --log-level warning
 ```
 
-## Dependencias
+## 📝 Notas Importantes
 
-* **FastAPI**: Framework principal.
-* **SQLAlchemy**: ORM para manejar la base de datos.
-* **Pytest**: Framework para pruebas unitarias.
+- **Campo tipo_falta**: Acepta cualquier string, el frontend debe manejar las opciones
+- **✅ Validación de estudiantes**: SÍ se integra con la API de estudiantes (puerto 8005)
+- **Paginación**: Límite máximo de 100 registros por consulta
+- **CORS**: Configurado para desarrollo local (puertos 3000, 5173, 8080)
+- **Dependencia**: Requiere que la API de estudiantes esté ejecutándose en el puerto 8005
 
-## Documentación interactiva
+## 🛠️ Tecnologías
 
-Accede a la documentación Swagger en [http://localhost:8006/docs](http://localhost:8006/docs) o ReDoc en [http://localhost:8006/redoc](http://localhost:8006/redoc).
+- **FastAPI** 0.104+
+- **SQLAlchemy** 2.0+
+- **MySQL** 8.0+
+- **Python** 3.8+
 
-## Contacto
+---
 
-Para más información, contactar con el
+**Puerto**: 8003 | **Documentación**: `/docs` | **Health Check**: `/health`

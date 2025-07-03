@@ -140,10 +140,7 @@ def create_observacion_endpoint(
         # Crear la observación
         nueva_observacion = create_observacion(db, observacion)
         
-        # Preparar respuesta con información del estudiante (simplificado por ahora)
-        # estudiante_info = get_info_estudiante(nueva_observacion.id_estudiante)
-        estudiante_info = None  # Por ahora simplificado
-        
+        # Preparar respuesta con información del estudiante
         observacion_detallada = ObservacionDetallada(
             id_observacion=nueva_observacion.id_observacion,
             id_estudiante=nueva_observacion.id_estudiante,
@@ -198,9 +195,8 @@ def get_observacion_endpoint(
                 detail=f"Observación con ID {id_observacion} no encontrada"
             )
         
-        # Obtener información del estudiante (simplificado por ahora)
-        # estudiante_info = get_info_estudiante(observacion.id_estudiante)
-        estudiante_info = None  # Por ahora simplificado
+        # Obtener información del estudiante
+        estudiante_info = get_info_estudiante(observacion.id_estudiante)
         
         # Preparar respuesta detallada
         observacion_detallada = ObservacionDetallada(
@@ -268,9 +264,8 @@ def update_observacion_endpoint(
         # Actualizar la observación
         observacion_actualizada = update_observacion(db, id_observacion, observacion_update)
         
-        # Obtener información del estudiante (simplificado por ahora)
-        # estudiante_info = get_info_estudiante(observacion_actualizada.id_estudiante)
-        estudiante_info = None  # Por ahora simplificado
+        # Obtener información del estudiante
+        estudiante_info = get_info_estudiante(observacion_actualizada.id_estudiante)
         
         # Preparar respuesta detallada
         observacion_detallada = ObservacionDetallada(
