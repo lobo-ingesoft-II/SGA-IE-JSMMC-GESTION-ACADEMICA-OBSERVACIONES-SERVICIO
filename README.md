@@ -113,11 +113,9 @@ ESTUDIANTES_API_URL=http://localhost:8005
 ## 🚀 Producción
 
 ```bash
-# Ejecutar en producción con Uvicorn
-uvicorn app.main:app --host 0.0.0.0 --port 8003 --workers 4
+# Ejecutar con Uvicorn
+uvicorn app.main:app --reload --port 8011
 
-# O con configuración adicional para producción
-uvicorn app.main:app --host 0.0.0.0 --port 8003 --workers 4 --log-level warning
 ```
 
 ## 📝 Notas Importantes
@@ -137,4 +135,4 @@ uvicorn app.main:app --host 0.0.0.0 --port 8003 --workers 4 --log-level warning
 
 ---
 
-**Puerto**: 8003 | **Documentación**: `/docs` | **Health Check**: `/health`
+**Puerto**: 8011 | **Documentación**: `/docs` | **Health Check**: `/health`
