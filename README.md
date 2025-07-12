@@ -22,12 +22,12 @@ cp .env.example .env
 # Editar .env con tu configuración de base de datos
 
 # 5. Ejecutar servidor
-uvicorn app.main:app --reload --port 8003
+uvicorn app.main:app --reload --port 8007
 ```
 
 ### Acceso
-- **API**: http://localhost:8003
-- **Documentación**: http://localhost:8003/docs
+- **API**: http://localhost:8007
+- **Documentación**: http://localhost:8007/docs
 - **Health Check**: http://localhost:8003/health
 
 ## 📚 Endpoints Principales
