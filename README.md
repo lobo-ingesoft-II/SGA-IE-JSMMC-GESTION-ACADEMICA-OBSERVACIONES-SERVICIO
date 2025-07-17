@@ -1,138 +1,119 @@
-# 🎓 API de Observaciones Disciplinarias
+# 📚 SGA-IE-JSMMC-OBSERVACIONES-SERVICIO
 
-API REST para gestión de observaciones disciplinarias de estudiantes.
+**Autor:** Javier Esteban Martinez Giron
 
-## 🚀 Inicio Rápido
-
-### Instalación
-```bash
-# 1. Clonar y navegar al directorio
-git clone <repository-url>
-cd SGA-IE-JSMMC-GESTION-ACADEMICA-OBSERVACIONES-SERVICIO
-
-# 2. Crear entorno virtual
-python3 -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-
-# 3. Instalar dependencias
-pip install -r requirements.txt
-
-# 4. Configurar variables de entorno
-cp .env.example .env
-# Editar .env con tu configuración de base de datos
-
-# 5. Ejecutar servidor
-uvicorn app.main:app --reload --port 8007
-```
-
-### Acceso
-- **API**: http://localhost:8007
-- **Documentación**: http://localhost:8007/docs
-- **Health Check**: http://localhost:8003/health
-
-## 📚 Endpoints Principales
-
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| GET | `/observaciones/` | Listar observaciones (paginado) |
-| POST | `/observaciones/` | Crear nueva observación |
-| GET | `/observaciones/{id}` | Obtener observación específica |
-| PUT | `/observaciones/{id}` | Actualizar observación |
-| DELETE | `/observaciones/{id}` | Eliminar observación |
-| GET | `/observaciones/estudiante/{id}` | Observaciones por estudiante |
-
-## 💡 Ejemplo de Uso
-
-### Crear Observación
-```bash
-curl -X POST "http://localhost:8003/observaciones/" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "id_estudiante": 1,
-    "id_asignatura": 1,
-    "id_profesor": 1,
-    "fecha_incidente": "2025-07-02",
-    "tipo_falta": "Leve",
-    "articulo_manual_convivencia": "Art. 10.1",
-    "observacion": "Descripción de la observación"
-  }'
-```
-
-### Integración Frontend (JavaScript)
-```javascript
-const API_BASE_URL = 'http://localhost:8003';
-
-// Listar observaciones
-async function getObservaciones(skip = 0, limit = 50) {
-  const response = await fetch(`${API_BASE_URL}/observaciones/?skip=${skip}&limit=${limit}`);
-  return await response.json();
-}
-
-// Crear observación
-async function createObservacion(data) {
-  const response = await fetch(`${API_BASE_URL}/observaciones/`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
-  });
-  return await response.json();
-}
-
-// Tipos de falta manejados por el frontend
-const TIPOS_FALTA = ['Leve', 'Grave', 'Gravísima'];
-```
-
-## ⚙️ Configuración
-
-### Variables de Entorno (.env)
-```env
-# Base de datos
-DB_HOST=localhost
-DB_PORT=3306
-DB_USER=root
-DB_PASSWORD=tu_password
-DB_NAME=observaciones_db
-
-# APIs externas
-ESTUDIANTES_API_URL=http://localhost:8005
-```
-
-### Estructura de Datos
-```json
-{
-  "id_estudiante": 1,
-  "id_asignatura": 1,
-  "id_profesor": 1,
-  "fecha_incidente": "2025-07-02",
-  "tipo_falta": "Leve|Grave|Gravísima",
-  "articulo_manual_convivencia": "Art. 10.1",
-  "observacion": "Descripción mínima de 10 caracteres"
-}
-```
-
-## 🚀 Producción
-
-```bash
-# Ejecutar con Uvicorn
-uvicorn app.main:app --reload --port 8011
-
-```
-
-## 📝 Notas Importantes
-
-- **Campo tipo_falta**: Acepta cualquier string, el frontend debe manejar las opciones
-- **✅ Validación de estudiantes**: SÍ se integra con la API de estudiantes (puerto 8005)
-- **Paginación**: Límite máximo de 100 registros por consulta
-- **CORS**: Configurado para desarrollo local (puertos 3000, 5173, 8080)
-- **Dependencia**: Requiere que la API de estudiantes esté ejecutándose en el puerto 8005
-
-## 🛠️ Tecnologías
-
-- **FastAPI** 0.104+
-- **SQLAlchemy** 2.0+
-- **MySQL** 8.0+
-- **Python** 3.8+
+---
+API o Servicio para la gestión de observaciones disciplinarias.
 
 ---
 
-**Puerto**: 8011 | **Documentación**: `/docs` | **Health Check**: `/health`
+## 📝 Descripción general
+
+API para la gestión de observaciones disciplinarias de estudiantes en la Institución Educativa Departamental Josué Manrique.  
+Permite registrar, consultar, actualizar y eliminar observaciones disciplinarias, almacenando la información en MySQL y exponiendo endpoints REST documentados con Swagger/FastAPI.
+
+---
+
+## 🎯 Funcionalidades
+
+- Registro y validación de observaciones disciplinarias.
+- Consulta de observaciones por ID o listado completo.
+- Filtrado de observaciones por estudiante.
+- Actualización y eliminación de registros.
+- Documentación interactiva con Swagger (FastAPI).
+- Observabilidad con Prometheus para monitoreo.
+
+---
+
+## 🔧 Endpoints REST
+
+| Método | Endpoint                           | Descripción                                  |
+|--------|------------------------------------|--------------------------------------------- |
+| GET    | `/observaciones/`                  | Listar todas las observaciones               |
+| GET    | `/observaciones/{id_observacion}`  | Consultar una observación por ID             |
+| GET    | `/observaciones/estudiante/{id}`   | Listar observaciones de un estudiante        |
+| POST   | `/observaciones/`                  | Crear una nueva observación                  |
+| PUT    | `/observaciones/{id_observacion}`  | Actualizar una observación existente         |
+| DELETE | `/observaciones/{id_observacion}`  | Eliminar una observación                     |
+| GET    | `/observaciones/custom_metrics`    | Obtener métricas de Prometheus               |
+---
+
+### 📊 Observabilidad
+
+La API incluye métricas de Prometheus para monitoreo:
+
+```bash
+# Ver métricas
+curl http://localhost:8011/observaciones/custom_metrics
+```
+
+Métricas disponibles:
+- Contador de peticiones: `http_requests_total`
+- Latencia: `http_request_duration_seconds`
+- Errores: `http_request_errors_total`
+
+---
+
+### 📑 Swagger
+
+La documentación Swagger está disponible en:
+http://localhost:8011/docs
+---
+
+### ⚙️ Configuración !!!IMPORTANTE 
+Crea un archivo .env en la raíz del proyecto con el siguiente contenido:
+
+```
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=tu_usuario
+DB_PASSWORD=tu_contraseña
+DB_NAME=observaciones_db
+ESTUDIANTES_API_URL=http://localhost:8005
+```
+
+---
+### 🚀 Instalación y Ejecución
+Instala las dependencias:
+```bash
+pip install -r requirements.txt
+```
+Ejecuta el servidor:
+```bash
+uvicorn app.main:app --reload --port 8011
+```
+
+---
+###  🚀 Correr pruebas unitarias
+
+De forma global 
+```bash
+pytest
+```
+
+De forma más específica
+```bash
+pytest app/test/test_observaciones_service.py
+```
+
+Prueba específica
+```bash
+pytest app/test/test_observaciones_service.py::test_create_observacion
+```
+
+---
+### ¿Porque puerto 8011 para el servidor Uvicorn?
+Porque se va a llamar ahí para la petición de la api de observaciones.
+
+---
+### 🔧 Stack Tecnológico
+
+| Tecnología | Versión | Propósito |
+|------------|---------|----------|
+| **FastAPI** | 0.104+ | Framework web |
+| **SQLAlchemy** | 2.0+ | ORM |
+| **MySQL** | 8.0+ | Base de datos |
+| **Pydantic** | 2.0+ | Validación |
+| **Prometheus Client** | 0.19+ | Métricas |
+| **Pytest** | 7.0+ | Testing |
+| **Python** | 3.8+ | Lenguaje |
