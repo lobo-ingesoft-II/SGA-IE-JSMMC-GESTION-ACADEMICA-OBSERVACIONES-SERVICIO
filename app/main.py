@@ -8,6 +8,11 @@ from app.routers import observaciones
 from app.db import init_db, test_connection
 from app.services.estudiantes_client import estudiantes_client
 
+# Librerias para Observabilidad
+from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
+from starlette.responses import Response
+from app.routers.observaciones import REQUEST_COUNT_OBSERVACIONES_ROUTERS, REQUEST_LATENCY_OBSERVACIONES_ROUTERS, ERROR_COUNT_OBSERVACIONES_ROUTERS
+
 # Configurar logging
 logging.basicConfig(
     level=logging.INFO,
@@ -64,9 +69,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Middleware para logging de peticiones
+# Middleware para observabilidad
 @app.middleware("http")
-async def log_requests(request: Request, call_next):
+async def metrics_middleware(request: Request, call_next):
     start_time = time.time()
     
     # Log de petición entrante
@@ -74,20 +79,28 @@ async def log_requests(request: Request, call_next):
     
     try:
         response = await call_next(request)
-        
-        # Log de respuesta exitosa
-        process_time = time.time() - start_time
-        logger.info(f"✅ {request.method} {request.url.path} - Status: {response.status_code} - Tiempo: {process_time:.3f}s")
-        
-        return response
-    
+        status = response.status_code
     except Exception as e:
+        status = 500
         # Log de error en el middleware
         process_time = time.time() - start_time
         logger.error(f"❌ {request.method} {request.url.path} - Error: {str(e)} - Tiempo: {process_time:.3f}s")
+        raise e
+    finally:
+        latency = time.time() - start_time
+        endpoint = request.url.path
+        method = request.method
+
+        REQUEST_COUNT_OBSERVACIONES_ROUTERS.labels(endpoint=endpoint, method=method).inc()
+        REQUEST_LATENCY_OBSERVACIONES_ROUTERS.labels(endpoint=endpoint, method=method).observe(latency)
+
+        if status >= 400:
+            ERROR_COUNT_OBSERVACIONES_ROUTERS.labels(endpoint=endpoint, method=method, status_code=str(status)).inc()
         
-        # Re-levantar la excepción para que sea manejada por los handlers
-        raise
+        # Log de respuesta
+        logger.info(f"✅ {method} {endpoint} - Status: {status} - Tiempo: {latency:.3f}s")
+
+    return response
 
 # Manejo de errores de validación personalizados
 @app.exception_handler(RequestValidationError)

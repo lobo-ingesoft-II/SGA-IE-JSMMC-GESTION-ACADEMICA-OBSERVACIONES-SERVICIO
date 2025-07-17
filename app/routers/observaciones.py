@@ -2,6 +2,12 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 from typing import List
 import logging
+
+# Librerias para Observabilidad
+from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
+import time
+from starlette.responses import Response
+from prometheus_client import CollectorRegistry, generate_latest
 from app.schemas.observaciones import (
     ObservacionCreate, 
     ObservacionResponse, 
@@ -33,6 +39,36 @@ router = APIRouter(
         422: {"description": "Error de validación"}
     }
 )
+
+# Metricas 
+REQUEST_COUNT_OBSERVACIONES_ROUTERS = Counter(
+    "http_requests_total", 
+    "TOTAL PETICIONES HTTP router-observaciones",
+    ["method", "endpoint"]
+)
+
+REQUEST_LATENCY_OBSERVACIONES_ROUTERS = Histogram(
+    "http_request_duration_seconds", 
+    "DURACION DE LAS PETICIONES router-observaciones",
+    ["method", "endpoint"],
+    buckets=[0.1, 0.3, 1.0, 2.5, 5.0, 10.0]  
+)
+
+# 3. Errores por endpoint
+ERROR_COUNT_OBSERVACIONES_ROUTERS = Counter(
+    "http_request_errors_total",
+    "TOTAL ERRORES HTTP (status >= 400)",
+    ["endpoint", "method", "status_code"]
+)
+
+# Ruta para observabilidad 
+@router.get("/custom_metrics")
+def custom_metrics():
+    registry = CollectorRegistry()
+    registry.register(REQUEST_COUNT_OBSERVACIONES_ROUTERS)
+    registry.register(REQUEST_LATENCY_OBSERVACIONES_ROUTERS)
+    registry.register(ERROR_COUNT_OBSERVACIONES_ROUTERS)
+    return Response(generate_latest(registry), media_type=CONTENT_TYPE_LATEST)
 
 def get_db():
     """Dependency para obtener sesión de base de datos"""
