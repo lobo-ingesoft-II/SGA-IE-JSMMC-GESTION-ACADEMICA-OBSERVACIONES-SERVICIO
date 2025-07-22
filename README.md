@@ -1,148 +1,119 @@
-# Servicio de Observaciones
+# 📚 SGA-IE-JSMMC-OBSERVACIONES-SERVICIO
 
-## Descripción
+**Autor:** Javier Esteban Martinez Giron
 
-Este servicio permite gestionar las observaciones realizadas sobre los estudiantes en el sistema académico. Proporciona funcionalidades para crear, obtener y listar observaciones, facilitando el seguimiento académico.
+---
+API o Servicio para la gestión de observaciones disciplinarias.
 
-## Endpoints
+---
 
-### Registrar una observación
+## 📝 Descripción general
 
-**POST** `/observaciones/`
+API para la gestión de observaciones disciplinarias de estudiantes en la Institución Educativa Departamental Josué Manrique.  
+Permite registrar, consultar, actualizar y eliminar observaciones disciplinarias, almacenando la información en MySQL y exponiendo endpoints REST documentados con Swagger/FastAPI.
 
-#### Request Body
+---
 
-```json
-{
-  "id_estudiante": 1,
-  "id_asignatura": 1,
-  "id_profesor": 1,
-  "fecha_incidente": "2025-06-08",
-  "tipo_falta": "Falta grave",
-  "articulo_manual_convivencia": "Artículo 5, sección 2",
-  "observacion": "El estudiante no asistió al evento obligatorio."
-}
-```
+## 🎯 Funcionalidades
 
-#### Response
+- Registro y validación de observaciones disciplinarias.
+- Consulta de observaciones por ID o listado completo.
+- Filtrado de observaciones por estudiante.
+- Actualización y eliminación de registros.
+- Documentación interactiva con Swagger (FastAPI).
+- Observabilidad con Prometheus para monitoreo.
 
-**Status:** 200 OK
+---
 
-```json
-{
-  "id_observacion": 1,
-  "id_estudiante": 1,
-  "id_asignatura": 1,
-  "id_profesor": 1,
-  "fecha_incidente": "2025-06-08",
-  "tipo_falta": "Falta grave",
-  "articulo_manual_convivencia": "Artículo 5, sección 2",
-  "observacion": "El estudiante no asistió al evento obligatorio.",
-  "fecha_registro": "2025-06-09T12:00:00"
-}
-```
+## 🔧 Endpoints REST
 
-### Obtener una observación por ID
+| Método | Endpoint                           | Descripción                                  |
+|--------|------------------------------------|--------------------------------------------- |
+| GET    | `/observaciones/`                  | Listar todas las observaciones               |
+| GET    | `/observaciones/{id_observacion}`  | Consultar una observación por ID             |
+| GET    | `/observaciones/estudiante/{id}`   | Listar observaciones de un estudiante        |
+| POST   | `/observaciones/`                  | Crear una nueva observación                  |
+| PUT    | `/observaciones/{id_observacion}`  | Actualizar una observación existente         |
+| DELETE | `/observaciones/{id_observacion}`  | Eliminar una observación                     |
+| GET    | `/observaciones/custom_metrics`    | Obtener métricas de Prometheus               |
+---
 
-**GET** `/observaciones/{id_observacion}`
+### 📊 Observabilidad
 
-#### Response
-
-**Status:** 200 OK
-
-```json
-{
-  "id_observacion": 1,
-  "id_estudiante": 1,
-  "id_asignatura": 1,
-  "id_profesor": 1,
-  "fecha_incidente": "2025-06-08",
-  "tipo_falta": "Falta grave",
-  "articulo_manual_convivencia": "Artículo 5, sección 2",
-  "observacion": "El estudiante no asistió al evento obligatorio.",
-  "fecha_registro": "2025-06-09T12:00:00"
-}
-```
-
-**Status:** 404 Not Found
-
-```json
-{
-  "detail": "Observacion not found"
-}
-```
-
-### Listar todas las observaciones
-
-**GET** `/observaciones/`
-
-#### Response
-
-**Status:** 200 OK
-
-```json
-[
-  {
-    "id_observacion": 1,
-    "id_estudiante": 1,
-    "id_asignatura": 1,
-    "id_profesor": 1,
-    "fecha_incidente": "2025-06-08",
-    "tipo_falta": "Falta grave",
-    "articulo_manual_convivencia": "Artículo 5, sección 2",
-    "observacion": "El estudiante no asistió al evento obligatorio.",
-    "fecha_registro": "2025-06-09T12:00:00"
-  },
-  {
-    "id_observacion": 2,
-    "id_estudiante": 2,
-    "id_asignatura": 2,
-    "id_profesor": 2,
-    "fecha_incidente": "2025-06-09",
-    "tipo_falta": "Falta leve",
-    "articulo_manual_convivencia": null,
-    "observacion": "El estudiante entregó la tarea fuera del tiempo establecido.",
-    "fecha_registro": "2025-06-09T12:30:00"
-  }
-]
-```
-
-## Instalación
-
-1. Asegúrate de tener el entorno configurado:
-
-   ```bash
-   pip install -r requirements.txt
-   ```
-2. Configura la base de datos en el archivo `.env`:
-
-   ```env
-   DATABASE_URL="mysql+pymysql://user:password@host:port/database"
-   ```
-3. Ejecuta el servidor:
-
-   ```bash
-   uvicorn app.main:app --reload --port 8006
-   ```
-
-## Pruebas
-
-Para ejecutar las pruebas unitarias:
+La API incluye métricas de Prometheus para monitoreo:
 
 ```bash
-pytest app/tests/test_observaciones.py
+# Ver métricas
+curl http://localhost:8011/observaciones/custom_metrics
 ```
 
-## Dependencias
+Métricas disponibles:
+- Contador de peticiones: `http_requests_total`
+- Latencia: `http_request_duration_seconds`
+- Errores: `http_request_errors_total`
 
-* **FastAPI**: Framework principal.
-* **SQLAlchemy**: ORM para manejar la base de datos.
-* **Pytest**: Framework para pruebas unitarias.
+---
 
-## Documentación interactiva
+### 📑 Swagger
 
-Accede a la documentación Swagger en [http://localhost:8006/docs](http://localhost:8006/docs) o ReDoc en [http://localhost:8006/redoc](http://localhost:8006/redoc).
+La documentación Swagger está disponible en:
+http://localhost:8011/docs
+---
 
-## Contacto
+### ⚙️ Configuración !!!IMPORTANTE 
+Crea un archivo .env en la raíz del proyecto con el siguiente contenido:
 
-Para más información, contactar con el
+```
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=tu_usuario
+DB_PASSWORD=tu_contraseña
+DB_NAME=observaciones_db
+ESTUDIANTES_API_URL=http://localhost:8005
+```
+
+---
+### 🚀 Instalación y Ejecución
+Instala las dependencias:
+```bash
+pip install -r requirements.txt
+```
+Ejecuta el servidor:
+```bash
+uvicorn app.main:app --reload --port 8011
+```
+
+---
+###  🚀 Correr pruebas unitarias
+
+De forma global 
+```bash
+pytest
+```
+
+De forma más específica
+```bash
+pytest app/test/test_observaciones_service.py
+```
+
+Prueba específica
+```bash
+pytest app/test/test_observaciones_service.py::test_create_observacion
+```
+
+---
+### ¿Porque puerto 8011 para el servidor Uvicorn?
+Porque se va a llamar ahí para la petición de la api de observaciones.
+
+---
+### 🔧 Stack Tecnológico
+
+| Tecnología | Versión | Propósito |
+|------------|---------|----------|
+| **FastAPI** | 0.104+ | Framework web |
+| **SQLAlchemy** | 2.0+ | ORM |
+| **MySQL** | 8.0+ | Base de datos |
+| **Pydantic** | 2.0+ | Validación |
+| **Prometheus Client** | 0.19+ | Métricas |
+| **Pytest** | 7.0+ | Testing |
+| **Python** | 3.8+ | Lenguaje |

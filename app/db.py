@@ -1,11 +1,22 @@
 from sqlalchemy import create_engine, text
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from app.config import settings
 
-engine = create_engine(settings.DATABASE_URL, pool_pre_ping=True)
+# Intentar usar DeclarativeBase (SQLAlchemy 2.0+) o declarative_base (SQLAlchemy 1.x)
+try:
+    from sqlalchemy.orm import DeclarativeBase
+    
+    class Base(DeclarativeBase):
+        pass
+except ImportError:
+    # Fallback para SQLAlchemy 1.x
+    from sqlalchemy.ext.declarative import declarative_base
+    Base = declarative_base()
+
+# Usar mysql_url en lugar de DATABASE_URL para evitar problemas
+database_url = settings.mysql_url if settings.mysql_url else settings.DATABASE_URL
+engine = create_engine(database_url, pool_pre_ping=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-Base = declarative_base()
 
 def init_db():
     Base.metadata.create_all(bind=engine)

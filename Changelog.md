@@ -1,16 +1,30 @@
-# Changelog - Servicio de Observaciones
+# Changelog
 
-## [1.0.0] - 2025-06-09
-### Agregado
-- Creación del servicio de observaciones.
-- Endpoint **POST** `/observaciones/` para registrar una nueva observación.
-- Endpoint **GET** `/observaciones/{id_observacion}` para obtener una observación por ID.
-- Endpoint **GET** `/observaciones/` para listar todas las observaciones.
-- Integración de modelos, esquemas y servicios con SQLAlchemy y Pydantic.
-- Pruebas unitarias básicas para las operaciones CRUD de observaciones.
+## [2.1.1] - 2025-07-16
+- Implementación de observabilidad con Prometheus
+- Adición de pruebas unitarias para la API
+- Estandarización con otros servicios
 
-## [1.0.1] - 2025-06-09
-### Modificado
-- Ajuste en el modelo para incluir los campos `id_asignatura`, `id_profesor`, `fecha_incidente`, `tipo_falta` y `articulo_manual_convivencia`.
-- Actualización de las pruebas unitarias y documentación para reflejar los cambios.
-- Mejoras en los mensajes de error para observaciones no encontradas.
+## [2.1.0] - 2025-07-11
+- Ajuste de endpoints
+- Actualización de documentación
+- Corrección de errores menores
+- Mejoras en la observabilidad con Prometheus
+
+## [2.0.0] - 2025-07-02
+- Servicio ajustado a la segmentación de la base de datos
+- Implementación de arquitectura SOFEA
+- Integración con microservicios
+- Mejoras en validación y manejo de errores
+
+## [1.0.0] - 2025-06-13
+- Implementación inicial del servicio de Observaciones
+- Endpoints CRUD básicos
+- Integración con SQLAlchemy y MySQL
+- Validación de datos con Pydantic
+- Pruebas unitarias para funcionalidad básica
+
+## Convenciones de Versionado
+- **MAJOR** (X.0.0): Cambios incompatibles en la API
+- **MINOR** (0.X.0): Nuevas funcionalidades compatibles
+- **PATCH** (0.0.X): Correcciones de bugs
